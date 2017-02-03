@@ -1,0 +1,37 @@
+module Controller
+(
+   output reg ready, add_regs, shift_regs, decr_c, load_regs,
+   input start, zero, clock, reset
+);
+ 
+parameter idle = 0, sum = 1, shift = 2; //states
+reg [1:0] state, next_state;
+ 
+//Use about 10 lines of code to describe the behavioral modeling of the state diagram.
+assign Ready = (state == idle);
+assign Sum = (state == sum);
+assign Shift_left = (state == shift);
+ 
+always@(posedge clock, negedge reset)
+            if (reset==0) state <= idle;
+            else state <= next_state;
+always@(state, start, zero) begin
+load_regs =0;
+            case(state)
+            idle: if(start) begin load_regs =1; next_state = sum; end
+            else  next_state = idle;
+            sum: next_state = shift
+            shift: if(zero) next state = idle; else next_state = sum;
+            endcase
+end
+endmodule
+
+module Top
+#(parameter dpwidth = 13, countwidth = 5)
+(input start, clock, reset, [countwidth-1:0] N, output ready, [dpwidth-1:0] dpresult
+    );
+ 
+//Use 2 lines of code to integrate both data path and controller modules.
+Controller  C(start, zero, clock, reset);
+DataPath  DP(load_regs, add_regs, shift_regs, decr_c, clock, input [4:0] N);
+endmodule
