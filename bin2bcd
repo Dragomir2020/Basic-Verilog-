@@ -1,0 +1,31 @@
+module bin2bcd(bin, bcd);
+     input [12:0] bin;
+     output reg [15:0] bcd;
+ 
+     integer i = 12;
+    
+     // Loop 12 times and then perform the final shift
+     always @ (bin) begin
+          bcd = 0;
+          for (i = 12; i > 0; i = i - 1) begin
+               bcd = bcd << 1;
+               bcd[0] = bin[i];
+               if (bcd[15:12] >= 5) // Add 3 to the thousands column
+                     bcd = bcd + 12288;
+               if (bcd[11:8] >= 5) // Add 3 to the hundreds column
+                     bcd = bcd + 768;
+               if (bcd[7:4] >= 5) // Add 3 to the tens column
+                     bcd = bcd + 48;
+               if (bcd[3:0] >= 5) // Add 3 to the ones column
+                     bcd = bcd + 3;
+          end
+          bcd = bcd << 1;
+          bcd[0] = bin[0];
+     end
+endmodule
+
+
+
+`timescale 1ns / 1ps
+ 
+// 4 digit BCD to 7 segment LED
