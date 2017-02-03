@@ -1,0 +1,39 @@
+module sim;
+parameter dpwidth = 13, countwidth = 5;
+            // Inputs
+            reg start;
+            reg clock;
+            reg reset;
+            reg [countwidth-1:0] N;
+            wire ready;
+            wire [dpwidth-1:0] dpresult;
+ 
+            // Instantiate the Unit Under Test (UUT)
+            Top uut (
+                        .start(start),
+                        .clock(clock),
+                        .reset(reset),
+                        .N (N),
+                        .ready (ready),
+                        .dpresult (dpresult)
+            );
+           
+            initial begin
+               clock = 0;
+                        repeat (30) #5 clock = ~clock;
+                        end
+           
+           
+            initial fork
+                        // Initialize Inputs
+                        start = 0;
+                        reset = 0;
+                        N = 7;       //Generate the 7th Fibonacci number
+                        #2 reset = 1;
+                        #7 reset = 0;
+                        #12 start = 1;
+                        #22 start = 0;
+                       
+            join
+     
+endmodule
